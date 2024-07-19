@@ -13,7 +13,7 @@ import minimalmodbus
 
 class DigiKey_Monitor(minimalmodbus.Instrument(1, 1,'rtu')):
     
-    def __init__(self):
+    def __init__(self, day):
         self.isOpen = False
         self.serial.timeout = 0.1
         #self.ip_address = "192.168.2.1"
@@ -28,6 +28,9 @@ class DigiKey_Monitor(minimalmodbus.Instrument(1, 1,'rtu')):
         self.voltage
         self.current
        # self.power
+       
+    def getDate(self):
+        return 
     
     #Connecting to DigiKey IX10
     def connect(self):
@@ -70,7 +73,6 @@ class DigiKey_Monitor(minimalmodbus.Instrument(1, 1,'rtu')):
         self.current = self.read_register(2,3,3,False)
         #self.power = self.read_register(3,3,3,False)
         self.read_interval(initial)
-        
                          
     def time_stamp(self, dt):
         Alternate1 = "00"
@@ -92,7 +94,6 @@ class DigiKey_Monitor(minimalmodbus.Instrument(1, 1,'rtu')):
             self.alternate = Alternate1
         
         self.convert(Date_Array)
-     
         
     def convert(self, Date_Array): 
         self.date = ""
@@ -105,7 +106,6 @@ class DigiKey_Monitor(minimalmodbus.Instrument(1, 1,'rtu')):
         with open ("Readings.csv", "a") as f:
             f.write(str(self.datetime) + "," + str(self.voltage) + ","
                   + str(self.current))
-        
         
 if __name__=='__main__':
     

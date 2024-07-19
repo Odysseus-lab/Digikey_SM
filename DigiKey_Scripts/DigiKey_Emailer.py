@@ -19,7 +19,7 @@ if sys.version_info.major>=3:
     #from email.MIMEImage import MIMEImage
     
 from email import encoders
-import datetime as dt
+from datetime import datetime as dt
 from time import sleep
 import numpy as np
 import pandas as pd
@@ -30,9 +30,6 @@ libDir = r'C:\GitHUb\CFV-Library'
 if libDir not in sys.path:
     sys.path.append(libDir)
 
-
-test_email ='james.richards@cfvlabs.com'
-
 img_dir_fault = r'C:\GitHub\CFV-Library\Media\Fault'
 img_dir_inprogress = r'C:\GitHub\CFV-Library\Media\In Progress'
 img_dir_testcomplete = r'C:\GitHub\CFV-Library\Media\Test Complete'
@@ -41,15 +38,16 @@ img_dir_attention = r'C:\GitHub\CFV-Library\Media\Attention'
 accounts = dict()
 accounts['DataAlerts'] = {'Address':'dataalerts@cfvlabs.com',
                           'Password':'DAcfv2022!'}
-
+accounts['InstrumentationGroup'] = {'odysseus.valdez@cfvlabs.com'
+                                    'james.richards@cfvlabs.com',
+                                    'douglas.robb@cfvlabs.com'}
 class Emailer: 
     
     """
     Wrapper for the email functions
     """
     
-    def __init__(self,account=None, subject='', media=[], 
-                 attachments=[], distList=None):
+    def __init__(self):
         
         '''
         Subject and Body text are provided as inputs.
@@ -57,23 +55,19 @@ class Emailer:
         
         Attachments can be provided as a list of filepaths. 
         '''
-        self.account = account
-        if self.account != None:
-            if self.account in accounts.keys():
-                self.user = accounts[account]['Address']
-                self.password = accounts[account]['Password']
-            else:
-                pass
-                
-        self.distributionList = distList    
-        self.subject = subject
-        self.media = media
-        self.attachments = attachments
+        self.account = 'odysseus.valdez@cfvlabs.com'
+        #self.distributionList = distList
+        self.subject = 'Daily String Monitor Data'
+        self.attachments = 'Readings.csv'
         self.bodyHTML = ''
+        self.body = ''
+        self.user = ''
+        self.password = ''
+        self.msg = ''
     
     def clear_html(self):
         self.bodyHTML = ''
-
+    
     def build_html(self,txt):
         self.bodyHTML += '<html>'
         self.bodyHTML += '<body>'
@@ -123,29 +117,37 @@ class Emailer:
             server.sendmail(self.user, contact, msg.as_string())
             server.quit()
             
+    def AlertInstrumentationGroup(self):
+        #Send an alert for nefarious data        
+        return
+    
+    def fetchDailyData(self):
+        date = dt.now()
+        print (date)
+        hour = date.hour
+        minute = date.minute
+        second = date.second
+        time = str(hour) + ":" + str(minute) + ":" + str(second)
+        print("Time:", time)
+        self.clear_html()            
+        self.build_html(txt=txt_lines)
+        self.construct_message(body=self.bodyHTML)
+        self.send_notification()
+        
 if __name__ == '__main__':
     
-    distList = distribution_list['development']
     
-    print('Current distribution list:')
-    for address in distList:
-        print(' %s' % address)
+    Email = Emailer()
+    #distList = distribution_list['development']
     
-    txt_subject = 'TEST'
+    #print('Current distribution list:')
+    #for address in distList:
+    #    print(' %s' % address)
+    
+    txt_subject = ''
     #txt_body = '<html><i>This is a test.</i></html>'
     txt_lines = []
-    txt_lines.append('Line 1')
-    txt_lines.append('Line 2')
-    # test = Emailer(account='DataAlerts',subject=txt_subject,
-    #                distList=distList)
-    test = Emailer(account='AppAlerts',subject=txt_subject,
-                    distList=distList)
-    # test = Emailer(account='TestAlerts',subject=txt_subject,
-    #                 distList=distList)
-    # test = Emailer(account='EquipAlerts',subject=txt_subject,
-    #                 distList=distList)
-    test.clear_html()            
-    test.build_html(lines=txt_lines)
-    test.construct_message(body=test.bodyHTML)
-    test.send_notification()
+    txt_lines.append('')
+    Email.fetchDailyData()
+    
     
